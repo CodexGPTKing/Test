@@ -1,0 +1,28 @@
+@font-face {
+  font-family: 'PoppinsOmnisend';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PXB4aUd5cDhrdjhKSGdGVnJKSkxlZEEmc2tleT1mMjFkNmU3ODNmYTQzYzg4JnY9djI0) format('woff');
+}
+@font-face {
+  font-family: 'PoppinsOmnisend';
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PXB4aUR5cDhrdjhKSGdGVnJKSkxteTE1bEV3JnNrZXk9MjljM2JkODMzYTU0YmE4YyZ2PXYyNA==) format('woff');
+}
+@font-face {
+  font-family: 'PoppinsOmnisend';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PXB4aUV5cDhrdjhKSGdGVnJGSk0mc2tleT04Nzc1OWZiMDk2NTQ4ZjZkJnY9djI0) format('woff');
+}
+@font-face {
+  font-family: 'PoppinsOmnisend';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PXB4aUJ5cDhrdjhKSGdGVnJMQ3o3VjFnJnNrZXk9Y2VhNzZmZTYzNzE1YTY3YSZ2PXYyNA==) format('woff');
+}

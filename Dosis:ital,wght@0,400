@@ -1,0 +1,14 @@
+@font-face {
+  font-family: 'DosisOmnisend';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PUhoeUpVNXNuOXZPbUx4TmtJd1JTalRWTldMRUpON01WM3cmc2tleT05MWU5MGQ2NzczODRiYWRlJnY9djM0) format('woff');
+}
+@font-face {
+  font-family: 'DosisOmnisend';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.soundestlink.com/fonts/static/aHR0cHM6Ly9mb250cy5nc3RhdGljLmNvbS9sL2ZvbnQ_a2l0PUhoeUpVNXNuOXZPbUx4TmtJd1JTalRWTldMRUowTFFWM3cmc2tleT05MWU5MGQ2NzczODRiYWRlJnY9djM0) format('woff');
+}
