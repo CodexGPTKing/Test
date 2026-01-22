@@ -1,0 +1,1 @@
+jQuery(function($){$('#wp-admin-bar-object_cache_manager-default a').on('click',function(){var ajaxRequest=$.ajax({type:'GET',url:ajaxurl,data:{action:'object_cache_manager',sub_action:$(this).attr('href').split('#')[1]},dataType:'json'});ajaxRequest.done(function(response){alert(response.data)});return!1})})

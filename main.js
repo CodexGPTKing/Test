@@ -1,0 +1,2 @@
+jQuery(function($){$('.catalog_product_categories .nav-top-link').on('click',function(){let $li=$(this).closest('li');let $i=$(this).find('i');if($li.hasClass('open')){$li.removeClass('open');$i.removeClass('fa-angle-up').addClass('fa-angle-down')}else{$li.addClass('open');$i.removeClass('fa-angle-down').addClass('fa-angle-up')}
+return!1})})
