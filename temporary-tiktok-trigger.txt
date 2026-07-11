@@ -1,1 +1,2 @@
 Trigger the temporary TikTok subtitle extraction workflow for https://www.tiktok.com/t/ZTSb5emh7/
+Second pass: download the separate audio stream and verify the native captions with Whisper.
