@@ -1,0 +1,109 @@
+name: Temporary TikTok ZTSb5emh7 extraction
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temporary-tiktok-ztsb5emh7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: temporary-tiktok-ztsb5emh7-public
+  cancel-in-progress: true
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Install extraction and transcription tools
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq curl
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade yt-dlp openai-whisper
+
+      - name: Resolve and download video
+        env:
+          INPUT_URL: https://www.tiktok.com/t/ZTSb5emh7/
+        run: |
+          set -u
+          mkdir -p output diagnostics
+          echo "$INPUT_URL" > diagnostics/input_url.txt
+
+          curl -A 'Mozilla/5.0' -sSIL "$INPUT_URL" > diagnostics/redirect_headers.txt 2>&1 || true
+          curl -A 'Mozilla/5.0' -sSL -o diagnostics/tiktok_page.html -w '%{url_effective}\n' "$INPUT_URL" > diagnostics/effective_url.txt 2>&1 || true
+          EFFECTIVE_URL="$(tail -n 1 diagnostics/effective_url.txt 2>/dev/null || true)"
+          case "$EFFECTIVE_URL" in http*) ;; *) EFFECTIVE_URL="$INPUT_URL" ;; esac
+          echo "$EFFECTIVE_URL" > diagnostics/resolved_url.txt
+
+          curl -A 'Mozilla/5.0' -sS -G 'https://www.tiktok.com/oembed' \
+            --data-urlencode "url=$EFFECTIVE_URL" -o diagnostics/oembed.json || true
+
+          yt-dlp --verbose --dump-single-json "$EFFECTIVE_URL" > diagnostics/ytdlp_info.json 2> diagnostics/ytdlp_info.log || true
+          yt-dlp --verbose --write-subs --write-auto-subs --sub-langs all --sub-format 'srt/vtt/best' \
+            --output 'output/video.%(ext)s' "$EFFECTIVE_URL" > diagnostics/ytdlp_download.log 2>&1 || true
+
+          curl -A 'Mozilla/5.0' -sS -G 'https://www.tikwm.com/api/' \
+            --data-urlencode "url=$INPUT_URL" --data 'hd=1' -o diagnostics/tikwm.json || true
+
+          if ! find output -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.webm' -o -name '*.mkv' -o -name '*.mov' \) | grep -q .; then
+            PLAY_URL="$(jq -r '.data.hdplay // .data.play // .data.wmplay // empty' diagnostics/tikwm.json 2>/dev/null | head -n1)"
+            if [ -n "$PLAY_URL" ]; then
+              case "$PLAY_URL" in http*) ;; *) PLAY_URL="https://www.tikwm.com$PLAY_URL" ;; esac
+              echo "$PLAY_URL" > diagnostics/tikwm_play_url.txt
+              curl -A 'Mozilla/5.0' -L --fail --retry 3 -o output/video.mp4 "$PLAY_URL" || true
+            fi
+          fi
+
+          MEDIA="$(find output -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.webm' -o -name '*.mkv' -o -name '*.mov' \) | head -n1)"
+          if [ -n "$MEDIA" ]; then
+            ffprobe -v error -show_format -show_streams -of json "$MEDIA" > diagnostics/ffprobe.json || true
+            ffmpeg -y -i "$MEDIA" -vn -ac 1 -ar 16000 output/audio.wav > diagnostics/ffmpeg_audio.log 2>&1
+          fi
+          find output diagnostics -maxdepth 2 -type f -printf '%p\t%s bytes\n' | sort > diagnostics/files-before-transcription.txt
+
+      - name: Transcribe audio with Whisper
+        run: |
+          set -u
+          if [ -s output/audio.wav ]; then
+            whisper output/audio.wav --model base --task transcribe --output_dir output --output_format all --fp16 False > diagnostics/whisper.log 2>&1 || \
+            whisper output/audio.wav --model tiny --task transcribe --output_dir output --output_format all --fp16 False >> diagnostics/whisper.log 2>&1 || true
+          fi
+          find output diagnostics -maxdepth 2 -type f -printf '%p\t%s bytes\n' | sort > diagnostics/files-final.txt
+          cat diagnostics/files-final.txt
+
+      - name: Publish subtitle and diagnostic text files
+        if: always()
+        run: |
+          set -u
+          DEST='results/tiktok-ztsb5emh7'
+          rm -rf "$DEST"
+          mkdir -p "$DEST/output" "$DEST/diagnostics"
+          find output -maxdepth 1 -type f \( -name '*.srt' -o -name '*.vtt' -o -name '*.txt' -o -name '*.json' -o -name '*.tsv' \) -size -5M -exec cp -v {} "$DEST/output/" \; 2>/dev/null || true
+          find diagnostics -maxdepth 1 -type f \( -name '*.txt' -o -name '*.json' -o -name '*.log' \) -size -5M -exec cp -v {} "$DEST/diagnostics/" \; 2>/dev/null || true
+          date -u +'%Y-%m-%dT%H:%M:%SZ' > "$DEST/completed_at.txt"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Publish TikTok subtitle extraction results [skip ci]' || true
+          git push origin HEAD:main
+
+      - name: Upload full artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tiktok-ztsb5emh7-results
+          path: |
+            output/**
+            diagnostics/**
+          if-no-files-found: warn
+          retention-days: 1
