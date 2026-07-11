@@ -1,2 +1,0 @@
-Trigger the temporary TikTok subtitle extraction workflow for https://www.tiktok.com/t/ZTSb5emh7/
-Third pass: verify ambiguous phrases with Whisper small.en and word timestamps.
