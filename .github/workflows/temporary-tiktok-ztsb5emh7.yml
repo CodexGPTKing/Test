@@ -1,10 +1,6 @@
 name: Temporary TikTok ZTSb5emh7 extraction
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/temporary-tiktok-ztsb5emh7.yml'
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -23,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install extraction and transcription tools
+      - name: Install subtitle tools
         run: |
           set -euxo pipefail
           sudo apt-get update
@@ -31,66 +27,44 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install --upgrade yt-dlp openai-whisper
 
-      - name: Resolve and download video, captions, and audio
+      - name: Recover native captions and separate audio
         env:
           INPUT_URL: https://www.tiktok.com/t/ZTSb5emh7/
         run: |
           set -u
           mkdir -p output diagnostics
-          echo "$INPUT_URL" > diagnostics/input_url.txt
-
-          curl -A 'Mozilla/5.0' -sSIL "$INPUT_URL" > diagnostics/redirect_headers.txt 2>&1 || true
-          curl -A 'Mozilla/5.0' -sSL -o diagnostics/tiktok_page.html -w '%{url_effective}\n' "$INPUT_URL" > diagnostics/effective_url.txt 2>&1 || true
-          EFFECTIVE_URL="$(tail -n 1 diagnostics/effective_url.txt 2>/dev/null || true)"
+          curl -A 'Mozilla/5.0' -sSL -o diagnostics/tiktok_page.html -w '%{url_effective}\n' "$INPUT_URL" > diagnostics/resolved_url.txt 2>&1 || true
+          EFFECTIVE_URL="$(tail -n 1 diagnostics/resolved_url.txt 2>/dev/null || true)"
           case "$EFFECTIVE_URL" in http*) ;; *) EFFECTIVE_URL="$INPUT_URL" ;; esac
-          echo "$EFFECTIVE_URL" > diagnostics/resolved_url.txt
+          echo "$EFFECTIVE_URL" > diagnostics/effective_url.txt
 
-          curl -A 'Mozilla/5.0' -sS -G 'https://www.tiktok.com/oembed' \
-            --data-urlencode "url=$EFFECTIVE_URL" -o diagnostics/oembed.json || true
-          curl -A 'Mozilla/5.0' -sS -G 'https://api.microlink.io/' \
-            --data-urlencode "url=$INPUT_URL" --data 'prerender=true' --data 'video=true' --data 'audio=true' \
-            -o diagnostics/microlink.json || true
           curl -A 'Mozilla/5.0' -sS -G 'https://www.tikwm.com/api/' \
             --data-urlencode "url=$INPUT_URL" --data 'hd=1' -o diagnostics/tikwm.json || true
-
-          yt-dlp --verbose --dump-single-json "$EFFECTIVE_URL" > diagnostics/ytdlp_info.json 2> diagnostics/ytdlp_info.log || true
-          yt-dlp --verbose --write-subs --write-auto-subs --sub-langs all --sub-format 'srt/vtt/best' \
-            --output 'output/video.%(ext)s' "$EFFECTIVE_URL" > diagnostics/ytdlp_download.log 2>&1 || true
+          yt-dlp --skip-download --write-subs --write-auto-subs --sub-langs all --sub-format 'srt/vtt/best' \
+            --output 'output/video.%(ext)s' "$EFFECTIVE_URL" > diagnostics/ytdlp_captions.log 2>&1 || true
 
           AUDIO_URL="$(jq -r '.data.music_info.play // empty' diagnostics/tikwm.json 2>/dev/null | head -n1)"
           if [ -n "$AUDIO_URL" ]; then
-            echo "$AUDIO_URL" > diagnostics/audio_url.txt
             curl -A 'Mozilla/5.0' -L --fail --retry 3 --retry-all-errors -o output/audio-source.mp3 "$AUDIO_URL" \
               > diagnostics/audio_download.log 2>&1 || true
           fi
-
           if [ -s output/audio-source.mp3 ]; then
             ffmpeg -y -i output/audio-source.mp3 -ac 1 -ar 16000 output/audio.wav \
               > diagnostics/ffmpeg_audio.log 2>&1 || true
-          else
-            MEDIA="$(find output -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.webm' -o -name '*.mkv' -o -name '*.mov' \) | head -n1)"
-            if [ -n "$MEDIA" ]; then
-              ffprobe -v error -show_format -show_streams -of json "$MEDIA" > diagnostics/ffprobe.json || true
-              ffmpeg -y -i "$MEDIA" -vn -ac 1 -ar 16000 output/audio.wav \
-                > diagnostics/ffmpeg_audio.log 2>&1 || true
-            fi
           fi
-
           find output diagnostics -maxdepth 2 -type f -printf '%p\t%s bytes\n' | sort > diagnostics/files-before-transcription.txt
-          cat diagnostics/files-before-transcription.txt
           true
 
-      - name: Transcribe audio with Whisper
+      - name: Transcribe with Whisper small.en
         if: always()
         run: |
           set -u
           if [ -s output/audio.wav ]; then
-            whisper output/audio.wav --model base --language en --task transcribe \
-              --output_dir output --output_format all --fp16 False > diagnostics/whisper.log 2>&1 || \
-            whisper output/audio.wav --model tiny --language en --task transcribe \
-              --output_dir output --output_format all --fp16 False >> diagnostics/whisper.log 2>&1 || true
+            whisper output/audio.wav --model small.en --language en --task transcribe \
+              --output_dir output --output_format all --word_timestamps True --fp16 False \
+              > diagnostics/whisper-small-en.log 2>&1 || true
           else
-            echo 'No audio.wav recovered' > diagnostics/whisper.log
+            echo 'No audio recovered' > diagnostics/whisper-small-en.log
           fi
           find output diagnostics -maxdepth 2 -type f -printf '%p\t%s bytes\n' | sort > diagnostics/files-final.txt
           cat diagnostics/files-final.txt
@@ -99,7 +73,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tiktok-ztsb5emh7-results
+          name: tiktok-ztsb5emh7-small-en
           path: |
             output/**
             diagnostics/**
