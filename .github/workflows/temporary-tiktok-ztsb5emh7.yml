@@ -5,13 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/temporary-tiktok-ztsb5emh7.yml'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: temporary-tiktok-ztsb5emh7-public
+  group: temporary-tiktok-ztsb5emh7-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -20,8 +22,6 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
 
       - name: Install extraction and transcription tools
         run: |
@@ -48,6 +48,10 @@ jobs:
           curl -A 'Mozilla/5.0' -sS -G 'https://www.tiktok.com/oembed' \
             --data-urlencode "url=$EFFECTIVE_URL" -o diagnostics/oembed.json || true
 
+          curl -A 'Mozilla/5.0' -sS -G 'https://api.microlink.io/' \
+            --data-urlencode "url=$INPUT_URL" --data 'prerender=true' --data 'video=true' --data 'audio=true' \
+            -o diagnostics/microlink.json || true
+
           yt-dlp --verbose --dump-single-json "$EFFECTIVE_URL" > diagnostics/ytdlp_info.json 2> diagnostics/ytdlp_info.log || true
           yt-dlp --verbose --write-subs --write-auto-subs --sub-langs all --sub-format 'srt/vtt/best' \
             --output 'output/video.%(ext)s' "$EFFECTIVE_URL" > diagnostics/ytdlp_download.log 2>&1 || true
@@ -57,9 +61,12 @@ jobs:
 
           if ! find output -maxdepth 1 -type f \( -name '*.mp4' -o -name '*.webm' -o -name '*.mkv' -o -name '*.mov' \) | grep -q .; then
             PLAY_URL="$(jq -r '.data.hdplay // .data.play // .data.wmplay // empty' diagnostics/tikwm.json 2>/dev/null | head -n1)"
+            if [ -z "$PLAY_URL" ]; then
+              PLAY_URL="$(jq -r '.data.video.url // .data.video.src // empty' diagnostics/microlink.json 2>/dev/null | head -n1)"
+            fi
             if [ -n "$PLAY_URL" ]; then
               case "$PLAY_URL" in http*) ;; *) PLAY_URL="https://www.tikwm.com$PLAY_URL" ;; esac
-              echo "$PLAY_URL" > diagnostics/tikwm_play_url.txt
+              echo "$PLAY_URL" > diagnostics/play_url.txt
               curl -A 'Mozilla/5.0' -L --fail --retry 3 -o output/video.mp4 "$PLAY_URL" || true
             fi
           fi
@@ -80,22 +87,6 @@ jobs:
           fi
           find output diagnostics -maxdepth 2 -type f -printf '%p\t%s bytes\n' | sort > diagnostics/files-final.txt
           cat diagnostics/files-final.txt
-
-      - name: Publish subtitle and diagnostic text files
-        if: always()
-        run: |
-          set -u
-          DEST='results/tiktok-ztsb5emh7'
-          rm -rf "$DEST"
-          mkdir -p "$DEST/output" "$DEST/diagnostics"
-          find output -maxdepth 1 -type f \( -name '*.srt' -o -name '*.vtt' -o -name '*.txt' -o -name '*.json' -o -name '*.tsv' \) -size -5M -exec cp -v {} "$DEST/output/" \; 2>/dev/null || true
-          find diagnostics -maxdepth 1 -type f \( -name '*.txt' -o -name '*.json' -o -name '*.log' \) -size -5M -exec cp -v {} "$DEST/diagnostics/" \; 2>/dev/null || true
-          date -u +'%Y-%m-%dT%H:%M:%SZ' > "$DEST/completed_at.txt"
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add "$DEST"
-          git commit -m 'Publish TikTok subtitle extraction results [skip ci]' || true
-          git push origin HEAD:main
 
       - name: Upload full artifact
         if: always()
