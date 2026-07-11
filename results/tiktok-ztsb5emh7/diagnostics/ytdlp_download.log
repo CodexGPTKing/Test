@@ -1,0 +1,25 @@
+[debug] Command-line config: ['--verbose', '--write-subs', '--write-auto-subs', '--sub-langs', 'all', '--sub-format', 'srt/vtt/best', '--output', 'output/video.%(ext)s', 'https://www.tiktok.com/@that.intel.guy/video/7661036452754623757?_r=1&_t=ZT-97vyRv0R3wk']
+[debug] Encodings: locale UTF-8, fs utf-8, pref UTF-8, out utf-8 (No ANSI), error utf-8 (No ANSI), screen utf-8 (No ANSI)
+[debug] yt-dlp version stable@2026.07.04 from yt-dlp/yt-dlp [997fa1408] (pip)
+[debug] Python 3.12.3 (CPython x86_64 64bit) - Linux-6.17.0-1018-azure-x86_64-with-glibc2.39 (OpenSSL 3.0.13 30 Jan 2024, glibc 2.39)
+[debug] exe versions: ffmpeg 6.1.1 (setts), ffprobe 6.1.1
+[debug] Optional libraries: certifi-2023.11.17, requests-2.31.0 (unsupported), sqlite3-3.45.1, urllib3-2.0.7
+[debug] JS runtimes: none
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib
+[debug] Plugin directories: none
+[debug] Loaded 1744 extractors
+[TikTok] Extracting URL: https://www.tiktok.com/@that.intel.guy/video/7661036452754623757?_r=1&_t=ZT-97vyRv0R3wk
+[TikTok] 7661036452754623757: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[info] 7661036452754623757: Downloading subtitles: eng-US
+[debug] Formats sorted by: hasvid, ie_pref, lang, quality, res, fps, hdr:12(7), vcodec, channels, acodec, size, br, asr, proto, vext, aext, hasaud, source, id
+[debug] Default format spec: bestvideo*+bestaudio/best
+[info] 7661036452754623757: Downloading 1 format(s): bytevc1_1080p_470402-1
+[info] Writing video subtitles to: output/video.eng-US.vtt
+[debug] Invoking http downloader on "https://v16m-webapp.tiktokcdn-us.com/f10fb3a10a200b687b54b3309b51434c/6a546647/video/tos/useast5/tos-useast5-v-0068-tx/2a2c73b576404903b8fd257eb7e4b5d6/?a=1988&bti=ODszNWYuMDE6&&bt=9601&ft=aEKq_qT0mIoPD127bxoI3wUH0eAbMeF~O5&mime_type=video_mp4&rc=ajU8ZGw5cjhxPDMzZzczNEBpajU8ZGw5cjhxPDMzZzczNEBrbXJyMmQ0YjVhLS1kMS9zYSNrbXJyMmQ0YjVhLS1kMS9zcw%3D%3D&l=20260711040938BF7A99BBA5F4E618B2C7&btag=e00060000"
+[download] Destination: output/video.eng-US.vtt
+[download]  11.7% of    8.57KiB at  Unknown B/s ETA Unknown[download]  35.0% of    8.57KiB at  Unknown B/s ETA Unknown[download]  81.7% of    8.57KiB at    6.81MiB/s ETA 00:00  [download] 100.0% of    8.57KiB at    5.99MiB/s ETA 00:00[download] 100% of    8.57KiB in 00:00:00 at 206.58KiB/s 
+[debug] Invoking http downloader on "https://v19-webapp-prime.us.tiktok.com/video/tos/useast5/tos-useast5-v-0068-tx/oIkyo8fjKiyJIevHIUuAt4GLLpeAAC1AFAvFAM/media-video-hvc1/?a=1988&bti=ODszNWYuMDE6&&bt=459&ft=aEeq8qT0mIoPD127bxoI3wUH0eAbMeF~O5&mime_type=video_mp4&rc=Z2c5OGdmM2dmaGU4aDw0NUBpajU8ZGw5cjhxPDMzZzczNEA1LzEwMl9iNWExXl4vLV8uYSNrbXJyMmQ0YjVhLS1kMS9zcw%3D%3D&expire=1783916103&l=20260711040938BF7A99BBA5F4E618B2C7&ply_type=2&policy=2&signature=a570415d536b9e993d50797ffb4fbf32&tk=tt_chain_token&btag=e000a0000"
+[download] Destination: output/video.mp4
+[download]   0.0% of   15.11MiB at  Unknown B/s ETA Unknown[download]   0.0% of   15.11MiB at  Unknown B/s ETA Unknown[download]   0.0% of   15.11MiB at  Unknown B/s ETA Unknown[download]   0.1% of   15.11MiB at   12.43MiB/s ETA 00:01  [download]   0.2% of   15.11MiB at   20.32MiB/s ETA 00:00[download]   0.4% of   15.11MiB at    7.60MiB/s ETA 00:01[download]   0.8% of   15.11MiB at    9.82MiB/s ETA 00:01[download]   1.6% of   15.11MiB at   11.78MiB/s ETA 00:01[download]   3.3% of   15.11MiB at   16.64MiB/s ETA 00:00[download]   6.6% of   15.11MiB at   23.64MiB/s ETA 00:00[download]  13.2% of   15.11MiB at   35.52MiB/s ETA 00:00[download]  26.5% of   15.11MiB at   56.28MiB/s ETA 00:00[download]  52.9% of   15.11MiB at   90.59MiB/s ETA 00:00[download]  79.4% of   15.11MiB at  124.05MiB/s ETA 00:00[download] 100.0% of   15.11MiB at  147.87MiB/s ETA 00:00[download] 100% of   15.11MiB in 00:00:00 at 97.99MiB/s  

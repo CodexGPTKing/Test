@@ -1,0 +1,17 @@
+[debug] Command-line config: ['--verbose', '--dump-single-json', 'https://www.tiktok.com/@that.intel.guy/video/7661036452754623757?_r=1&_t=ZT-97vyRv0R3wk']
+[debug] Encodings: locale UTF-8, fs utf-8, pref UTF-8, out utf-8 (No ANSI), error utf-8 (No ANSI), screen utf-8 (No ANSI)
+[debug] yt-dlp version stable@2026.07.04 from yt-dlp/yt-dlp [997fa1408] (pip)
+[debug] Python 3.12.3 (CPython x86_64 64bit) - Linux-6.17.0-1018-azure-x86_64-with-glibc2.39 (OpenSSL 3.0.13 30 Jan 2024, glibc 2.39)
+[debug] exe versions: ffmpeg 6.1.1 (setts), ffprobe 6.1.1
+[debug] Optional libraries: certifi-2023.11.17, requests-2.31.0 (unsupported), sqlite3-3.45.1, urllib3-2.0.7
+[debug] JS runtimes: none
+[debug] Proxy map: {}
+[debug] Request Handlers: urllib
+[debug] Plugin directories: none
+[debug] Loaded 1744 extractors
+[TikTok] Extracting URL: https://www.tiktok.com/@that.intel.guy/video/7661036452754623757?_r=1&_t=ZT-97vyRv0R3wk
+[TikTok] 7661036452754623757: Downloading webpage
+WARNING: [TikTok] The extractor is attempting impersonation, but no impersonate target is available. If you encounter errors, then see  https://github.com/yt-dlp/yt-dlp#impersonation  for information on installing the required dependencies
+[debug] Formats sorted by: hasvid, ie_pref, lang, quality, res, fps, hdr:12(7), vcodec, channels, acodec, size, br, asr, proto, vext, aext, hasaud, source, id
+[debug] Default format spec: bestvideo*+bestaudio/best
+[info] 7661036452754623757: Downloading 1 format(s): bytevc1_1080p_470402-1
